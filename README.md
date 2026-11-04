@@ -60,3 +60,5 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 =======
 # Mediahub
 >>>>>>> aa1419605053eccd4942737a8c116e1601b39060
+Plateforme de gestion et de diffusion de contenus multimédias.
+Projet développé dans le cadre du module "Atelier Framework côté serveur — Laravel".
