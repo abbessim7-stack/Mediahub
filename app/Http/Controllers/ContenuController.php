@@ -11,7 +11,13 @@ class ContenuController extends Controller
      */
     public function index()
     {
-        return 'Liste des contenus multimédias';
+        // On crée un tableau de faux objets pour simuler notre future base de données
+    $contenus = [
+        (object) ['titre' => 'Court-métrage documentaire', 'description' => 'Un aperçu de la vie urbaine.'],
+        (object) ['titre' => 'Podcast technologie', 'description' => 'Actualités du développement web.'],
+    ];
+
+    return view('contenus.index', ['contenus' => $contenus]);
     }
 
     /**

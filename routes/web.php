@@ -6,7 +6,7 @@ use App\Http\Controllers\ContenuController;
 use App\Http\Controllers\AdminController;
 
 // Page d'accueil
-Route::get('/', [PageController::class, 'accueil']);
+Route::get('/', [PageController::class, 'accueil'])->name('accueil');
 
 // Toutes les routes CRUD pour les contenus
 Route::resource('contenus', ContenuController::class);
