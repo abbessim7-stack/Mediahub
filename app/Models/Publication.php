@@ -28,4 +28,5 @@ public function tags()
 {
     return $this->belongsToMany(Tag::class);
 }
+protected $fillable = ['titre', 'contenu', 'categorie_id', 'user_id'];
 }

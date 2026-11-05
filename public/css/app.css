@@ -41,3 +41,36 @@ main {
         margin-bottom: 10px;
     }
 }
+/* --- Pagination Fix --- */
+nav[role="navigation"] {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+nav[role="navigation"] svg {
+    width: 20px !important;
+    height: 20px !important;
+    display: inline-block;
+}
+
+nav[role="navigation"] a,
+nav[role="navigation"] span {
+    padding: 8px 12px;
+    margin: 0 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+}
+
+nav[role="navigation"] .bg-white {
+    background-color: #f4f4f4;
+    font-weight: bold;
+}
+
+nav[role="navigation"] .hidden {
+    display: none;
+}

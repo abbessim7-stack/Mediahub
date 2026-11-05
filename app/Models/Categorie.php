@@ -12,4 +12,5 @@ class Categorie extends Model
 {
     return $this->hasMany(Publication::class);
 }
+protected $fillable = ['nom', 'slug'];
 }
