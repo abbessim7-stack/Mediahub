@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\Publication;
 
 use Illuminate\Http\Request;
 
@@ -10,19 +11,15 @@ class ContenuController extends Controller
      * Display a listing of the resource.
      */
     public function index()
-    {
-        // On crée un tableau de faux objets pour simuler notre future base de données
-    $contenus = [
-        (object) ['titre' => 'Court-métrage documentaire', 'description' => 'Un aperçu de la vie urbaine.'],
-        (object) ['titre' => 'Podcast technologie', 'description' => 'Actualités du développement web.'],
-    ];
+{
+    $publications = Publication::with(['categorie', 'auteur'])
+                    ->withCount('commentaires')
+                    ->latest()
+                    ->paginate(9);
 
-    return view('contenus.index', ['contenus' => $contenus]);
-    }
+    return view('contenus.index', ['publications' => $publications]);
+}
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         //
@@ -39,11 +36,11 @@ class ContenuController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        return 'Détail du contenu numéro ' . $id;
-        //dd($id);
-    }
+    public function show(Publication $contenu)
+{
+   $contenu->load(['categorie', 'auteur', 'commentaires.auteur', 'tags']);
+    return view('contenus.show', ['publication' => $contenu]);
+}
 
     /**
      * Show the form for editing the specified resource.
