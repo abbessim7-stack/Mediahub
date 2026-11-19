@@ -17,7 +17,7 @@
 </p>
 
     <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid #333;">
-        {!! nl2br(e($publication->contenu)) !!}
+        { {{nl2br(e($publication->contenu))}}  }
     </div>
 
     <h3 style="margin-top: 40px;">Commentaires ({{ $publication->commentaires->count() }})</h3>

@@ -26,6 +26,17 @@
                 {{ session('erreur') }}
             </div>
         @endif
+                <!-- Validation Errors -->
+        @if ($errors->any())
+            <div style="background: #f8d7da; color: #721c24; padding: 10px; margin-bottom: 20px; border-radius: 5px; border: 1px solid #f5c6cb;">
+                <strong>Oups ! Il y a des erreurs dans votre formulaire :</strong>
+                <ul style="margin-top: 5px; margin-bottom: 0;">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
         <!-- Main Content of the page -->
         @yield('contenu')

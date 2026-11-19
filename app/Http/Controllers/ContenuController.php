@@ -1,7 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\StorePublicationRequest;
+use App\Http\Requests\UpdatePublicationRequest;
 use App\Models\Publication;
+use App\Models\Categorie;
 
 use Illuminate\Http\Request;
 
@@ -21,16 +24,26 @@ class ContenuController extends Controller
 }
 
     public function create()
-    {
-        //
-    }
+{
+    $categories = Categorie::all();
+    return view('contenus.create', compact('categories'));
+}
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+        public function store(StorePublicationRequest $request) // <--- CHANGED
     {
-        //
+        // Get the validated data
+        $data = $request->validated();
+
+        // Force the user_id (temporary until Week 8)
+        $data['user_id'] = 1;
+
+        Publication::create($data);
+
+        return redirect()->route('contenus.index')
+            ->with('succes', 'Publication créée avec succès.');
     }
 
     /**
@@ -53,9 +66,12 @@ class ContenuController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+     public function update(UpdatePublicationRequest $request, Publication $contenu) // <--- CHANGED
     {
-        //
+        $contenu->update($request->validated()); // <--- CHANGED
+
+        return redirect()->route('contenus.index')
+            ->with('succes', 'Publication mise à jour avec succès.');
     }
 
     /**

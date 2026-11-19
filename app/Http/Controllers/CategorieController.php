@@ -1,6 +1,8 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Http\Requests\StoreCategorieRequest;
+use App\Http\Requests\UpdateCategorieRequest;
 
 use App\Models\Categorie;
 use Illuminate\Http\Request;
@@ -27,9 +29,10 @@ class CategorieController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+        public function store(StoreCategorieRequest $request) // <--- CHANGED
     {
-        Categorie::create($request->only('nom', 'slug'));
+        Categorie::create($request->validated()); // <--- CHANGED
+
         return redirect()
             ->route('categories.index')
             ->with('succes', 'Catégorie créée avec succès.');
@@ -54,9 +57,10 @@ class CategorieController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Categorie $categorie)
+    public function update(UpdateCategorieRequest $request, Categorie $categorie) // <--- CHANGED
     {
-        $categorie->update($request->only('nom', 'slug'));
+        $categorie->update($request->validated()); // <--- CHANGED
+
         return redirect()
             ->route('categories.index')
             ->with('succes', 'Catégorie mise à jour avec succès.');
