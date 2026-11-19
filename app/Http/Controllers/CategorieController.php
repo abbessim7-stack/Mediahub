@@ -23,19 +23,18 @@ class CategorieController extends Controller
      */
     public function create()
     {
+        $this->authorize('gerer-categories'); // <--- ADD THIS
         return view('categories.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-        public function store(StoreCategorieRequest $request) // <--- CHANGED
+        public function store(StoreCategorieRequest $request)
     {
-        Categorie::create($request->validated()); // <--- CHANGED
-
-        return redirect()
-            ->route('categories.index')
-            ->with('succes', 'Catégorie créée avec succès.');
+        $this->authorize('gerer-categories'); // <--- ADD THIS
+        Categorie::create($request->validated());
+        return redirect()->route('categories.index')->with('succes', 'Catégorie créée avec succès.');
     }
 
     /**
@@ -49,31 +48,35 @@ class CategorieController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Categorie $categorie)
+ public function edit(Categorie $categorie)
     {
+        $this->authorize('gerer-categories'); // <--- ADD THIS
         return view('categories.edit', compact('categorie'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateCategorieRequest $request, Categorie $categorie) // <--- CHANGED
+        public function update(UpdateCategorieRequest $request, Categorie $categorie)
     {
-        $categorie->update($request->validated()); // <--- CHANGED
-
-        return redirect()
-            ->route('categories.index')
-            ->with('succes', 'Catégorie mise à jour avec succès.');
+        $this->authorize('gerer-categories'); // <--- ADD THIS
+        $categorie->update($request->validated());
+        return redirect()->route('categories.index')->with('succes', 'Catégorie mise à jour avec succès.');
     }
+
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Categorie $categorie)
+       public function destroy(Categorie $categorie)
     {
+        $this->authorize('gerer-categories'); // <--- ADD THIS
+
+        if ($categorie->publications()->count() > 0) {
+            return redirect()->route('categories.index')->with('erreur', 'Impossible de supprimer cette catégorie car elle contient des publications.');
+        }
+
         $categorie->delete();
-        return redirect()
-            ->route('categories.index')
-            ->with('succes', 'Catégorie supprimée avec succès.');
+        return redirect()->route('categories.index')->with('succes', 'Catégorie supprimée avec succès.');
     }
-}
+};
