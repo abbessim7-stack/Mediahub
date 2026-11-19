@@ -32,15 +32,13 @@ class ContenuController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-        public function store(StorePublicationRequest $request) // <--- CHANGED
+         public function store(StorePublicationRequest $request)
     {
-        // Get the validated data
-        $data = $request->validated();
-
-        // Force the user_id (temporary until Week 8)
-        $data['user_id'] = 1;
-
-        Publication::create($data);
+        // Create the publication using validated data and the real logged-in user's ID
+        Publication::create([
+            ...$request->validated(),
+            'user_id' => auth()->id(), // <--- REPLACED THE FAKE '1'
+        ]);
 
         return redirect()->route('contenus.index')
             ->with('succes', 'Publication créée avec succès.');
@@ -58,17 +56,24 @@ class ContenuController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+     public function edit(Publication $contenu)
     {
-        //
+        // Check if the user can update this publication
+        $this->authorize('update', $contenu);
+
+        $categories = Categorie::all();
+        return view('contenus.edit', compact('contenu', 'categories'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-     public function update(UpdatePublicationRequest $request, Publication $contenu) // <--- CHANGED
+     public function update(UpdatePublicationRequest $request, Publication $contenu)
     {
-        $contenu->update($request->validated()); // <--- CHANGED
+        // Check if the user can update this publication
+        $this->authorize('update', $contenu);
+
+        $contenu->update($request->validated());
 
         return redirect()->route('contenus.index')
             ->with('succes', 'Publication mise à jour avec succès.');
@@ -77,8 +82,14 @@ class ContenuController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+   public function destroy(Publication $contenu)
     {
-        //
+        // Check if the user can delete this publication
+        $this->authorize('delete', $contenu);
+
+        $contenu->delete();
+
+        return redirect()->route('contenus.index')
+            ->with('succes', 'Publication supprimée avec succès.');
     }
 }

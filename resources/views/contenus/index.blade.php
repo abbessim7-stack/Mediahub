@@ -14,16 +14,21 @@
             <p><strong>Commentaires :</strong> {{ $publication->commentaires_count }}</p>
             <p>{{ Str::limit($publication->contenu, 150) }}</p>
 
-            <!-- Action Links -->
+                        <!-- Action Links -->
             <div style="margin-top: 15px; border-top: 1px solid #eee; padding-top: 10px;">
-                <a href="{{ route('contenus.show', $publication) }}">Voir le détail</a> |
-                <a href="{{ route('contenus.edit', $publication) }}" style="color: blue;">Modifier</a> |
+                <a href="{{ route('contenus.show', $publication) }}">Voir le détail</a>
 
-                <form method="POST" action="{{ route('contenus.destroy', $publication) }}" style="display: inline;">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" style="color: red; background: none; border: none; cursor: pointer;" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette publication ?');">Supprimer</button>
-                </form>
+                @can('update', $publication)
+                    | <a href="{{ route('contenus.edit', $publication) }}" style="color: blue;">Modifier</a>
+                @endcan
+
+                @can('delete', $publication)
+                    | <form method="POST" action="{{ route('contenus.destroy', $publication) }}" style="display: inline;">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" style="color: red; background: none; border: none; cursor: pointer;" onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette publication ?');">Supprimer</button>
+                    </form>
+                @endcan
             </div>
         </x-carte>
     @empty
