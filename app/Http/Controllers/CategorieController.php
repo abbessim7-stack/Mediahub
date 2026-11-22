@@ -13,12 +13,9 @@ class CategorieController extends Controller
      * Display a listing of the resource.
      */
 
-       public function index()
+    public function index()
     {
-        $categories = Cache::remember('categories.liste', 3600, function () {
-            return Categorie::withCount('publications')->paginate(5);
-        });
-
+        $categories = Categorie::withCount('publications')->paginate(5);
         return view('categories.index', compact('categories'));
     }
 
@@ -27,7 +24,7 @@ class CategorieController extends Controller
      */
     public function create()
     {
-        $this->authorize('gerer-categories'); // <--- ADD THIS
+        $this->authorize('gerer-categories');
         return view('categories.create');
     }
 
@@ -36,9 +33,9 @@ class CategorieController extends Controller
      */
         public function store(StoreCategorieRequest $request)
     {
-        $this->authorize('gerer-categories'); // <--- ADD THIS
+        $this->authorize('gerer-categories');
         Categorie::create($request->validated());
-        Cache::forget('categories.liste');
+        Cache::forget('categories.liste.v2');
         return redirect()->route('categories.index')->with('succes', 'Catégorie créée avec succès.');
     }
 
@@ -66,7 +63,7 @@ class CategorieController extends Controller
     {
         $this->authorize('gerer-categories'); // <--- ADD THIS
         $categorie->update($request->validated());
-        Cache::forget('categories.liste');
+        Cache::forget('categories.liste.v2');
         return redirect()->route('categories.index')->with('succes', 'Catégorie mise à jour avec succès.');
     }
 
@@ -83,7 +80,7 @@ class CategorieController extends Controller
         }
 
         $categorie->delete();
-        Cache::forget('categories.liste');
+        Cache::forget('categories.liste.v2');
         return redirect()->route('categories.index')->with('succes', 'Catégorie supprimée avec succès.');
     }
 };
