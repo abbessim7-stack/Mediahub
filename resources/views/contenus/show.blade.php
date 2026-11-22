@@ -31,6 +31,34 @@
     @empty
         <p>Aucun commentaire pour le moment.</p>
     @endforelse
+        <!-- Display full image if it exists -->
+    @if ($publication->image)
+        <div style="margin-bottom: 20px;">
+            <img src="{{ Storage::url($publication->image) }}" alt="{{ $publication->titre }}" style="max-width: 100%; height: auto; border-radius: 8px;">
+        </div>
+    @endif
+
+    <!-- Display media player if a file exists -->
+    @if ($publication->fichier_media)
+        <div style="margin-bottom: 20px;">
+            @if ($publication->type_media === 'audio')
+                <audio controls style="width: 100%;">
+                    <source src="{{ Storage::url($publication->fichier_media) }}">
+                    Votre navigateur ne supporte pas l'audio.
+                </audio>
+            @elseif ($publication->type_media === 'video')
+                <video controls style="max-width: 100%; height: auto; border-radius: 8px;">
+                    <source src="{{ Storage::url($publication->fichier_media) }}">
+                    Votre navigateur ne supporte pas la vidéo.
+                </video>
+            @endif
+        </div>
+    @endif
+
+    <!-- The text content -->
+    <div style="margin-top: 20px; padding: 15px; background: #f9f9f9; border-left: 4px solid #333;">
+        {!! nl2br(e($publication->contenu)) !!}
+    </div>
 
     <!-- Action Links -->
     <div style="margin-top: 30px; padding-top: 15px; border-top: 1px solid #eee;">

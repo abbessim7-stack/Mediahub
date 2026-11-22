@@ -5,7 +5,8 @@
 @section('contenu')
     <h1>Modifier la publication</h1>
 
-    <form method="POST" action="{{ route('contenus.update', $contenu) }}">
+    <!-- Notice the enctype attribute! -->
+    <form method="POST" action="{{ route('contenus.update', $contenu) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
@@ -36,6 +37,24 @@
                 <span style="color: red; font-size: 0.9em;">{{ $message }}</span>
             @enderror
         </p>
-        <button type="submit">Enregistrer les modifications</button>
+
+        <!-- New file upload fields -->
+        <p>
+            <label>Remplacer l'image (max 2MB) :</label><br>
+            <input type="file" name="image" accept="image/*">
+            @error('image')
+                <span style="color: red; font-size: 0.9em; display: block;">{{ $message }}</span>
+            @enderror
+        </p>
+
+        <p>
+            <label>Remplacer le fichier audio/vidéo (max 100MB) :</label><br>
+            <input type="file" name="fichier_media" accept="audio/*,video/*">
+            @error('fichier_media')
+                <span style="color: red; font-size: 0.9em; display: block;">{{ $message }}</span>
+            @enderror
+        </p>
+
+        <button type="submit" style="margin-top: 10px; padding: 10px 20px;">Enregistrer les modifications</button>
     </form>
 @endsection

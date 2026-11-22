@@ -5,7 +5,8 @@
 @section('contenu')
     <h1>Créer une publication</h1>
 
-    <form method="POST" action="{{ route('contenus.store') }}">
+    <!-- Notice the enctype attribute! -->
+    <form method="POST" action="{{ route('contenus.store') }}" enctype="multipart/form-data">
         @csrf
         <p>
             <label>Titre :</label><br>
@@ -34,6 +35,24 @@
                 <span style="color: red; font-size: 0.9em;">{{ $message }}</span>
             @enderror
         </p>
-        <button type="submit">Publier</button>
+
+        <!-- New file upload fields -->
+        <p>
+            <label>Image de couverture (max 2MB) :</label><br>
+            <input type="file" name="image" accept="image/*">
+            @error('image')
+                <span style="color: red; font-size: 0.9em; display: block;">{{ $message }}</span>
+            @enderror
+        </p>
+
+        <p>
+            <label>Fichier audio ou vidéo (max 100MB) :</label><br>
+            <input type="file" name="fichier_media" accept="audio/*,video/*">
+            @error('fichier_media')
+                <span style="color: red; font-size: 0.9em; display: block;">{{ $message }}</span>
+            @enderror
+        </p>
+
+        <button type="submit" style="margin-top: 10px; padding: 10px 20px;">Publier</button>
     </form>
 @endsection

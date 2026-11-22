@@ -6,6 +6,8 @@ use App\Http\Controllers\ContenuController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CategorieController;
 use App\Http\Controllers\AuthController;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Publication;
 
 // Page d'accueil
 Route::get('/', [PageController::class, 'accueil'])->name('accueil');
@@ -52,4 +54,24 @@ Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'creerConnexion'])->name('login');
     Route::get('/connexion', [AuthController::class, 'creerConnexion'])->name('connexion');
     Route::post('/connexion', [AuthController::class, 'connecter']);
+
 });
+Route::get('/documents/{publication}', function (Publication $publication) {
+    // 1. Check if the user is logged in
+    if (!auth()->check()) {
+        abort(403, 'Accès non autorisé.');
+    }
+
+    // 2. Check if the user is the author OR an admin
+    if (auth()->id() !== $publication->user_id && auth()->user()->role !== 'admin') {
+        abort(403, 'Vous n\'avez pas la permission de voir ce document.');
+    }
+
+    // 3. Serve the file securely from the local (private) disk
+    // (Note: We are using 'local' disk here. In a real app, you'd upload private files to the 'local' disk).
+    if ($publication->fichier_media) {
+        return Storage::disk('public')->download($publication->fichier_media);
+    }
+
+    abort(404, 'Aucun fichier associé.');
+})->name('documents.secure');

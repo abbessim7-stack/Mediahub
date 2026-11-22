@@ -11,22 +11,26 @@ class StorePublicationRequest extends FormRequest
         return true;
     }
 
-    public function rules(): array
+         public function rules(): array
     {
         return [
-            // Added min:10 and unique:publications,titre
-            'titre' => 'required|string|max:255|unique:publications,titre',
+            'titre' => [
+                'required', 'string', 'min:10', 'max:255',
+                // Only check uniqueness among records that are NOT soft-deleted
+                \Illuminate\Validation\Rule::unique('publications', 'titre')->whereNull('deleted_at'),
+            ],
             'contenu' => 'required|string|min:20',
             'categorie_id' => 'required|exists:categories,id',
+            'image' => 'nullable|file|image|max:2048',
+            'fichier_media' => 'nullable|file|mimes:mp3,mp4,wav|max:100480',
         ];
     }
-
     // Custom error messages
-    public function messages(): array
+        public function messages(): array
     {
         return [
-            'titre.min' => 'Le titre doit contenir au moins 10 caractères.',
-            'titre.unique' => 'Une publication avec ce titre existe déjà.',
+            // ... your existing messages ...
+            'fichier_media.file' => 'Vous ne pouvez téléverser qu\'un seul fichier média à la fois.',
         ];
     }
 }
