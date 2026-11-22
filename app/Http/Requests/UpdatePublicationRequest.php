@@ -12,19 +12,22 @@ class UpdatePublicationRequest extends FormRequest
         return true;
     }
 
-           public function rules(): array
+             public function rules(): array
     {
+        // Safely get the publication from either the Web route (contenu) or API route (publication)
+        $publication = $this->route('contenu') ?? $this->route('publication');
+
         return [
             'titre' => [
                 'required', 'string', 'min:10', 'max:255',
                 \Illuminate\Validation\Rule::unique('publications', 'titre')
-                    ->ignore($this->contenu) // Ignore the current publication
-                    ->whereNull('deleted_at'), // Ignore soft-deleted publications
+                    ->ignore($publication ? $publication->id : null) // <--- FIXED HERE
+                    ->whereNull('deleted_at'),
             ],
             'contenu' => 'required|string|min:20',
             'categorie_id' => 'required|exists:categories,id',
             'image' => 'nullable|file|image|max:2048',
-            'fichier_media' => 'nullable|file|mimes:mp3,mp4,wav|max:100480',
+            'fichier_media' => 'nullable|file|mimes:mp3,mp4,wav|max:20480',
         ];
     }
 
