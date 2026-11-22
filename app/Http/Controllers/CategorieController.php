@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 use App\Http\Requests\StoreCategorieRequest;
 use App\Http\Requests\UpdateCategorieRequest;
-
+use Illuminate\Support\Facades\Cache;
 use App\Models\Categorie;
 use Illuminate\Http\Request;
 
@@ -12,9 +12,13 @@ class CategorieController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+       public function index()
     {
-        $categories = Categorie::withCount('publications')->paginate(5);
+        // Store in cache for 3600 seconds (1 hour)
+        $categories = Cache::remember('categories.liste', 3600, function () {
+            return Categorie::withCount('publications')->paginate(5);
+        });
+
         return view('categories.index', compact('categories'));
     }
 
@@ -34,6 +38,7 @@ class CategorieController extends Controller
     {
         $this->authorize('gerer-categories'); // <--- ADD THIS
         Categorie::create($request->validated());
+        Cache::forget('categories.liste');
         return redirect()->route('categories.index')->with('succes', 'Catégorie créée avec succès.');
     }
 
@@ -61,6 +66,7 @@ class CategorieController extends Controller
     {
         $this->authorize('gerer-categories'); // <--- ADD THIS
         $categorie->update($request->validated());
+        Cache::forget('categories.liste');
         return redirect()->route('categories.index')->with('succes', 'Catégorie mise à jour avec succès.');
     }
 
@@ -77,6 +83,7 @@ class CategorieController extends Controller
         }
 
         $categorie->delete();
+        Cache::forget('categories.liste');
         return redirect()->route('categories.index')->with('succes', 'Catégorie supprimée avec succès.');
     }
 };
