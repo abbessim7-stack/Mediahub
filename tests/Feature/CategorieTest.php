@@ -8,7 +8,6 @@ use App\Models\User;
 
 class CategorieTest extends TestCase
 {
-    // This trait resets the database for every single test
     use RefreshDatabase;
 
     public function test_creation_dune_categorie_par_un_admin(): void

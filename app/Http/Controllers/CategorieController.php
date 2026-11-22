@@ -12,9 +12,9 @@ class CategorieController extends Controller
     /**
      * Display a listing of the resource.
      */
+
        public function index()
     {
-        // Store in cache for 3600 seconds (1 hour)
         $categories = Cache::remember('categories.liste', 3600, function () {
             return Categorie::withCount('publications')->paginate(5);
         });
