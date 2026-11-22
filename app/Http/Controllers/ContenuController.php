@@ -7,7 +7,8 @@ use App\Models\Publication;
 use App\Models\Categorie;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Image; // <-- Replace the Intervention use statement
+use Illuminate\Support\Facades\Image;
+use App\Events\PublicationCreee;
 
 class ContenuController extends Controller
 {
@@ -33,42 +34,26 @@ class ContenuController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-            public function store(StorePublicationRequest $request)
+              public function store(StorePublicationRequest $request)
     {
-        // 1. Get all the validated text data
         $donnees = $request->validated();
 
-                // 2. Handle the Image upload and thumbnail generation
         if ($request->hasFile('image')) {
-            $fichier = $request->file('image');
-
-            // 1. Generate a unique name for the thumbnail
-            $nomMiniature = 'publications/miniatures/' . uniqid() . '.jpg';
-
-            // 2. Use Laravel's native Image facade to create and store the thumbnail directly
-            Image::fromUpload($fichier)
-                ->cover(400, 300) // Crop and resize to 400x300
-                ->toJpeg(80)      // Convert to JPG with 80% quality
-                ->storePublicly($nomMiniature, 'public'); // Save to the public disk
-
-            // 3. Store the original image
-            $donnees['image'] = $fichier->store('publications', 'public');
+            $donnees['image'] = $request->file('image')->store('publications', 'public');
         }
 
-        // 3. Handle the Media (Audio/Video) upload
         if ($request->hasFile('fichier_media')) {
             $fichier = $request->file('fichier_media');
             $donnees['fichier_media'] = $fichier->store('medias', 'public');
-
-            // Automatically detect if it's audio or video based on the file type
             $donnees['type_media'] = str_starts_with($fichier->getMimeType(), 'audio') ? 'audio' : 'video';
         }
 
-        // 4. Attach the logged-in user
         $donnees['user_id'] = auth()->id();
 
-        // 5. Create the publication
-        Publication::create($donnees);
+        $publication = Publication::create($donnees);
+
+        // TRIGGER THE EVENT HERE
+        event(new PublicationCreee($publication));
 
         return redirect()->route('contenus.index')
             ->with('succes', 'Publication créée avec succès.');

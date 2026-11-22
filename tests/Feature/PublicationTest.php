@@ -65,4 +65,26 @@ class PublicationTest extends TestCase
         // 5. Assert the application blocks the action with a 403 Forbidden status
         $response->assertForbidden();
     }
+        public function test_creation_publication_avec_image_invalide_est_rejetee(): void
+    {
+        $auteur = User::factory()->create();
+        $categorie = \App\Models\Categorie::create(['nom' => 'Test', 'slug' => 'test']);
+
+        // Create a fake file that is NOT an image
+        $fichierInvalide = \Illuminate\Http\UploadedFile::fake()->create('document.txt', 100); // 100KB text file
+
+        $response = $this->actingAs($auteur)
+            ->post('/contenus', [
+                'titre' => 'Test image invalide',
+                'contenu' => str_repeat('a', 30),
+                'categorie_id' => $categorie->id,
+                'image' => $fichierInvalide, // Send the text file as an image
+            ]);
+
+        // Assert that the validation caught the error for the 'image' field
+        $response->assertSessionHasErrors('image');
+
+        // Assert nothing was saved in the database
+        $this->assertDatabaseMissing('publications', ['titre' => 'Test image invalide']);
+    }
 }
